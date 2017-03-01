@@ -8,8 +8,8 @@ import java.util.List;
 public class NormalTestExecutor implements TestExecutor {
 	private AkiTestExecutor akiTestExecutor;
 
-	public NormalTestExecutor() {
-		this.akiTestExecutor = new AkiTestExecutor<>();
+	public NormalTestExecutor(SuiteOrganizer suiteOrganizer, AnnotationStrategyHandler annotationStrategyHandler) {
+		this.akiTestExecutor = new AkiTestExecutor<>(suiteOrganizer, annotationStrategyHandler);
 	}
 
 	@Override

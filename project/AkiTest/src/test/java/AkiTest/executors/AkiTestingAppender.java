@@ -12,12 +12,12 @@ import java.util.stream.Collectors;
 /**
  * Created by vagrant on 2/25/17.
  */
-public class TestAppender extends ConsoleAppender {
+public class AkiTestingAppender extends ConsoleAppender {
  @Getter
  @Setter
  private final ArrayList<LoggingEvent> appendedMessages;
 
-    public TestAppender() {
+    public AkiTestingAppender() {
         StaticTestAppenderHistory.addAppenderInstance(this);
         this.appendedMessages = new ArrayList<>();
     }

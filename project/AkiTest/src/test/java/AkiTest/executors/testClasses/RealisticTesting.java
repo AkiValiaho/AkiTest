@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
  * Created by vagrant on 2/25/17.
  */
 @Slf4j
-public class TestFileWithRealTest {
+public class RealisticTesting {
     @Before
     public void init() {
         log.debug("Test init is called");
@@ -18,5 +18,10 @@ public class TestFileWithRealTest {
     public void somethingWild() {
         log.debug("Something wild happened");
         Assertion.assertTrue(false);
+    }
+
+    @Test
+    public void arealtest() {
+        log.debug("This test is more real than you are");
     }
 }

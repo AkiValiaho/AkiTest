@@ -1,7 +1,6 @@
 package AkiTest.executors;
 
 import AkiTest.mockHook.Mocklibrary;
-import com.akivaliaho.AkiTest.Before;
 import com.akivaliaho.AkiTest.Test;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,14 +25,16 @@ import static AkiTest.preconditions.Preconditions.checkCollectionNotNullOrEmpty;
 
 public class AkiTestExecutor<T> implements TestExecutor {
     private final SuiteOrganizer suiteOrganizer;
+    private final AnnotationStrategyHandler annotationStrategyHandler;
     private org.slf4j.Logger LOG = LoggerFactory.getLogger(AkiTestExecutor.class);
     @Getter
     @Setter
     private Set<Method> testMethods = new HashSet<>();
     private Mocklibrary mockLibrary;
 
-    public AkiTestExecutor() {
-        this.suiteOrganizer = new SuiteOrganizer();
+    public AkiTestExecutor(SuiteOrganizer suiteOrganizer, AnnotationStrategyHandler annotationStrategyHandler) {
+        this.suiteOrganizer = suiteOrganizer;
+        this.annotationStrategyHandler = annotationStrategyHandler;
     }
 
     public void execute() {
@@ -53,8 +54,7 @@ public class AkiTestExecutor<T> implements TestExecutor {
                     try {
                         Class<?> declaringClass = method.getDeclaringClass();
                         //Invoker in try/catch-block to catch AssertExceptions
-                        //Check if @Before is declared
-                        handleBefore(declaringClass);
+                        this.annotationStrategyHandler.handleOncePerTestAnnotations(declaringClass);
                         method.invoke(declaringClass.newInstance(), new Object[0]);
                     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                         if (e instanceof InvocationTargetException) {
@@ -78,15 +78,7 @@ public class AkiTestExecutor<T> implements TestExecutor {
                 });
     }
 
-    private void handleBefore(Class<?> declaringClass) throws IllegalAccessException, InstantiationException, InvocationTargetException {
-        Optional<Method> first = Arrays.stream(declaringClass.getMethods())
-                .filter(method -> method.getAnnotation(Before.class) != null)
-                .findFirst();
-        if (first.isPresent()) {
-            //Invoke before method
-            first.get().invoke(declaringClass.newInstance(), new Object[0]);
-        }
-    }
+
 
     private Class<? extends Throwable> getAllowedException(Method method) {
         Test annotation = method.getAnnotation(Test.class);

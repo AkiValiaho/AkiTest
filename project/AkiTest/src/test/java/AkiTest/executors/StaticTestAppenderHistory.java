@@ -10,14 +10,14 @@ import java.util.stream.Stream;
  * Created by vagrant on 2/25/17.
  */
 public class StaticTestAppenderHistory {
-    private static List<TestAppender> staticAppenders = new ArrayList<>();
+    private static List<AkiTestingAppender> staticAppenders = new ArrayList<>();
 
-    public static void addAppenderInstance(TestAppender testAppender) {
-        staticAppenders.add(testAppender);
+    public static void addAppenderInstance(AkiTestingAppender akiTestingAppender) {
+        staticAppenders.add(akiTestingAppender);
     }
 
     public static Stream<LoggingEvent> staticLoggingEvents() {
         return staticAppenders.stream()
-                .flatMap(testAppender -> testAppender.getAppendedMessages().stream());
+                .flatMap(akiTestingAppender -> akiTestingAppender.getAppendedMessages().stream());
     }
 }
