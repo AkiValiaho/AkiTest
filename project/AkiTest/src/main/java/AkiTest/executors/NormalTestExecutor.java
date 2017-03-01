@@ -1,8 +1,9 @@
 package AkiTest.executors;
 
+import AkiTest.mockHook.Mocklibrary;
+
 import java.util.List;
 
-import AkiTest.executors.TestExecutor;;
 
 public class NormalTestExecutor implements TestExecutor {
 	private AkiTestExecutor akiTestExecutor;
@@ -19,6 +20,11 @@ public class NormalTestExecutor implements TestExecutor {
 	@Override
 	public void scanClassPathForTests(List<String> packages) {
 		akiTestExecutor.scanClassPathForTests(packages);
+	}
+
+	@Override
+	public void feedMocker(Mocklibrary mocklibrary) {
+		akiTestExecutor.feedMocker(mocklibrary);
 	}
 
 }

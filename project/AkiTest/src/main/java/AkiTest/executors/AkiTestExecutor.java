@@ -1,5 +1,6 @@
 package AkiTest.executors;
 
+import AkiTest.mockHook.Mocklibrary;
 import com.akivaliaho.AkiTest.Before;
 import com.akivaliaho.AkiTest.Test;
 import lombok.Getter;
@@ -24,16 +25,30 @@ import java.util.stream.Collectors;
 import static AkiTest.preconditions.Preconditions.checkCollectionNotNullOrEmpty;
 
 public class AkiTestExecutor<T> implements TestExecutor {
+    private final SuiteOrganizer suiteOrganizer;
     private org.slf4j.Logger LOG = LoggerFactory.getLogger(AkiTestExecutor.class);
     @Getter
     @Setter
     private Set<Method> testMethods = new HashSet<>();
+    private Mocklibrary mockLibrary;
+
+    public AkiTestExecutor() {
+        this.suiteOrganizer = new SuiteOrganizer();
+    }
 
     public void execute() {
         //Number of tests to execute logged here
         LOG.info("Executing {} tests", testMethods.size());
         checkCollectionNotNullOrEmpty(testMethods);
-        testMethods.stream()
+        Map<Class, List<Method>> testMethodsPerClass = suiteOrganizer.organizeTestMethods(testMethods);
+        testMethodsPerClass.values()
+                .forEach(methodList -> executeTestsInList(methodList));
+    }
+
+    private void executeTestsInList(List<Method> methodList) {
+        //TODO Execute beforeClass annotation
+        //TODO Provide flag to allow parallelization
+        methodList.stream()
                 .forEach(method -> {
                     try {
                         Class<?> declaringClass = method.getDeclaringClass();
@@ -95,6 +110,11 @@ public class AkiTestExecutor<T> implements TestExecutor {
         LOG.debug("Found {} methods annotated with @Test", testMethods.size());
         testMethods.stream()
                 .forEach(clazz -> testMethods.add(clazz));
+    }
+
+    @Override
+    public void feedMocker(Mocklibrary mocklibrary) {
+        this.mockLibrary = mocklibrary;
     }
 
     private Collection<URL> getURLsForPackage(String string) {
