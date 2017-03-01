@@ -15,13 +15,13 @@ import static org.junit.Assert.assertTrue;
 public class AkiTestExecutorTest {
     private Logger logger = Logger.getLogger(AkiTestExecutorTest.class);
     private AkiTestExecutor akiTesting;
-    private TestAppender newAppender;
+    private TestAppender testLogAppender;
 
     @Before
     public void setUp() throws Exception {
         //Dynamically readd a custom log appender to this test
-        newAppender = new TestAppender();
-        this.logger.addAppender(newAppender);
+        testLogAppender = new TestAppender();
+        this.logger.addAppender(testLogAppender);
         this.akiTesting = new AkiTestExecutor<>();
     }
 
@@ -36,8 +36,10 @@ public class AkiTestExecutorTest {
     public void execute() throws Exception {
         defaultClassPathScan();
         this.akiTesting.execute();
+        //Assert that the test log appender contains init string
+        assertTrue(this.testLogAppender.containsString("Test init is called"));
         //Assert that the test appender contains the test string
-        assertTrue(this.newAppender.containsString("Something wild happened"));
+        assertTrue(this.testLogAppender.containsString("Something wild happened"));
     }
 
     @Test

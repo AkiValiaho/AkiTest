@@ -43,7 +43,7 @@ public class MavenTestRunner extends AbstractMojo {
     }
 
     public ClassLoader getClassLoader() throws DependencyResolutionRequiredException {
-        List<String> classpathElements = project.getCompileClasspathElements();
+        List<String> classpathElements = project.getTestClasspathElements();
         List<URL> classPathURLs = classpathElements.stream()
                 .map(element -> {
                     try {

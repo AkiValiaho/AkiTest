@@ -1,5 +1,6 @@
 package AkiTest.executors;
 
+import com.akivaliaho.AkiTest.Before;
 import com.akivaliaho.AkiTest.Test;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,10 +18,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static AkiTest.preconditions.Preconditions.checkCollectionNotNullOrEmpty;
@@ -40,6 +38,8 @@ public class AkiTestExecutor<T> implements TestExecutor {
                     try {
                         Class<?> declaringClass = method.getDeclaringClass();
                         //Invoker in try/catch-block to catch AssertExceptions
+                        //Check if @Before is declared
+                        handleBefore(declaringClass);
                         method.invoke(declaringClass.newInstance(), new Object[0]);
                     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                         if (e instanceof InvocationTargetException) {
@@ -61,6 +61,16 @@ public class AkiTestExecutor<T> implements TestExecutor {
                         e.printStackTrace();
                     }
                 });
+    }
+
+    private void handleBefore(Class<?> declaringClass) throws IllegalAccessException, InstantiationException, InvocationTargetException {
+        Optional<Method> first = Arrays.stream(declaringClass.getMethods())
+                .filter(method -> method.getAnnotation(Before.class) != null)
+                .findFirst();
+        if (first.isPresent()) {
+            //Invoke before method
+            first.get().invoke(declaringClass.newInstance(), new Object[0]);
+        }
     }
 
     private Class<? extends Throwable> getAllowedException(Method method) {
