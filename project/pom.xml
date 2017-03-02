@@ -15,6 +15,7 @@
 
 	<modules>
 		<module>AkiTest</module>
+		<module>AkiTestingClientCode</module>
 	</modules>
 	<build>
 		<plugins>

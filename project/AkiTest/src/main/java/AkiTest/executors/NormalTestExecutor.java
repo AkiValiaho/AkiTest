@@ -1,6 +1,6 @@
 package AkiTest.executors;
 
-import AkiTest.mockHook.Mocklibrary;
+import AkiTest.mockHook.MockLibraryHook;
 
 import java.util.List;
 
@@ -23,8 +23,8 @@ public class NormalTestExecutor implements TestExecutor {
 	}
 
 	@Override
-	public void feedMocker(Mocklibrary mocklibrary) {
-		akiTestExecutor.feedMocker(mocklibrary);
+	public void feedMocker(MockLibraryHook mockLibraryHook) {
+		akiTestExecutor.feedMocker(mockLibraryHook);
 	}
 
 }

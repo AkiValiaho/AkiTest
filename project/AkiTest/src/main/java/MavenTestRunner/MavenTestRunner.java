@@ -1,9 +1,10 @@
 package MavenTestRunner;
 
-import AkiTest.executors.AkiTestExecutorAnnotationStrategyHandler;
+import AkiTest.executors.AkiTestExecutorAnnotationConfigurationStrategyHandler;
 import AkiTest.executors.NormalTestExecutor;
 import AkiTest.executors.SuiteOrganizer;
 import AkiTest.executors.TestExecutor;
+import AkiTest.mockHook.AkiMocker;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -37,7 +38,7 @@ public class MavenTestRunner extends AbstractMojo {
             Thread.currentThread().setContextClassLoader(getClassLoader());
             getLog().info("Executing Aki Tests");
             TestExecutor akiTestExecutor = new NormalTestExecutor(new SuiteOrganizer(),
-                    new AkiTestExecutorAnnotationStrategyHandler());
+                    new AkiTestExecutorAnnotationConfigurationStrategyHandler(new AkiMocker()));
             akiTestExecutor.scanClassPathForTests(Arrays.stream(defaultPackage).collect(Collectors.toList()));
             akiTestExecutor.execute();
         } catch (DependencyResolutionRequiredException e) {

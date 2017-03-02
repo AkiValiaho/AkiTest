@@ -1,6 +1,6 @@
 package AkiTest.executors;
 
-import AkiTest.mockHook.Mocklibrary;
+import AkiTest.mockHook.MockLibraryHook;
 import com.akivaliaho.AkiTest.Test;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,13 +24,13 @@ import java.util.stream.Collectors;
 import static AkiTest.preconditions.Preconditions.checkCollectionNotNullOrEmpty;
 
 public class AkiTestExecutor<T> implements TestExecutor {
-    private final SuiteOrganizer suiteOrganizer;
-    private final AnnotationStrategyHandler annotationStrategyHandler;
+ private final SuiteOrganizer suiteOrganizer;
+ private final AnnotationStrategyHandler annotationStrategyHandler;
     private org.slf4j.Logger LOG = LoggerFactory.getLogger(AkiTestExecutor.class);
     @Getter
     @Setter
     private Set<Method> testMethods = new HashSet<>();
-    private Mocklibrary mockLibrary;
+    private MockLibraryHook mockLibrary;
 
     public AkiTestExecutor(SuiteOrganizer suiteOrganizer, AnnotationStrategyHandler annotationStrategyHandler) {
         this.suiteOrganizer = suiteOrganizer;
@@ -43,19 +43,25 @@ public class AkiTestExecutor<T> implements TestExecutor {
         checkCollectionNotNullOrEmpty(testMethods);
         Map<Class, List<Method>> testMethodsPerClass = suiteOrganizer.organizeTestMethods(testMethods);
         testMethodsPerClass.values()
-                .forEach(methodList -> executeTestsInList(methodList));
+                .forEach(methodList -> {
+                    try {
+                        executeTestsInList(methodList);
+                    } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
-    private void executeTestsInList(List<Method> methodList) {
-        //TODO Execute beforeClass annotation
+    private void executeTestsInList(List<Method> methodList) throws IllegalAccessException, InstantiationException, InvocationTargetException {
+        Object declaredClassInstance = this.annotationStrategyHandler.handleOncePerTestClassAnnotations(methodList.get(0).getDeclaringClass());
         //TODO Provide flag to allow parallelization
         methodList.stream()
                 .forEach(method -> {
                     try {
-                        Class<?> declaringClass = method.getDeclaringClass();
                         //Invoker in try/catch-block to catch AssertExceptions
-                        this.annotationStrategyHandler.handleOncePerTestAnnotations(declaringClass);
-                        method.invoke(declaringClass.newInstance(), new Object[0]);
+                        this.annotationStrategyHandler.handleOncePerTestAnnotations(declaredClassInstance.getClass(),
+                                declaredClassInstance);
+                        method.invoke(declaredClassInstance, new Object[0]);
                     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                         if (e instanceof InvocationTargetException) {
                             //Check if exception is allowed to happen
@@ -77,7 +83,6 @@ public class AkiTestExecutor<T> implements TestExecutor {
                     }
                 });
     }
-
 
 
     private Class<? extends Throwable> getAllowedException(Method method) {
@@ -105,8 +110,8 @@ public class AkiTestExecutor<T> implements TestExecutor {
     }
 
     @Override
-    public void feedMocker(Mocklibrary mocklibrary) {
-        this.mockLibrary = mocklibrary;
+    public void feedMocker(MockLibraryHook mockLibraryHook) {
+        this.mockLibrary = mockLibraryHook;
     }
 
     private Collection<URL> getURLsForPackage(String string) {

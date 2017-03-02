@@ -1,13 +1,16 @@
 package AkiTest.executors;
 
-import AkiTest.executors.testClasses.SecondTestFile;
 import AkiTest.executors.testClasses.RealisticTesting;
+import AkiTest.executors.testClasses.SecondTestFile;
+import mockit.Deencapsulation;
 import mockit.Injectable;
-import mockit.StrictExpectations;
+import mockit.Mock;
+import mockit.MockUp;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,15 +38,15 @@ public class AkiTestExecutorTest {
         this.akiTesting = new AkiTestExecutor<>(suiteOrganizer, annotationStrategyHandler);
     }
 
-    private Map<Class,List<Method>> createDefaultOrderedTestExecutionMap() {
+    private Map<Class, List<Method>> createDefaultOrderedTestExecutionMap() {
         Map<Class, List<Method>> orderedExecutionMap = new HashMap<>();
 
         //Second test file
         List<Method> secondTestFileWithTestMethodsLists = new ArrayList<>();
         Method[] declaredMethods = SecondTestFile.class.getDeclaredMethods();
         secondTestFileWithTestMethodsLists.addAll(Arrays.stream(declaredMethods)
-                                                    .filter(method -> method.getAnnotation(com.akivaliaho.AkiTest.Test.class) != null)
-                                                    .collect(Collectors.toList()));
+                .filter(method -> method.getAnnotation(com.akivaliaho.AkiTest.Test.class) != null)
+                .collect(Collectors.toList()));
         //Test file with real tests
         List<Method> testFileWithRealTestsList = new ArrayList<>();
         Method[] testFileWithRealTestsMethods = RealisticTesting.class.getDeclaredMethods();
@@ -60,15 +63,35 @@ public class AkiTestExecutorTest {
 
     @Test
     public void execute() throws Exception {
-        Map<Class, List<Method>> orderedExecutionMap = createDefaultOrderedTestExecutionMap();
-        new StrictExpectations() {{
-            suiteOrganizer.organizeTestMethods(withAny(null)); result = orderedExecutionMap; times = 1;
-            annotationStrategyHandler.handleOncePerTestAnnotations(withAny(null)); maxTimes = 3;
-        }};
+        mockDependenciesExecute();
         defaultClassPathScan();
         this.akiTesting.execute();
         //Assert that the test appender contains the test string
         assertTrue(this.testLogAppender.containsString("Something wild happened"));
+    }
+
+    private void mockDependenciesExecute() {
+        Map<Class, List<Method>> orderedExecutionMap = createDefaultOrderedTestExecutionMap();
+        SuiteOrganizer suiteOrganizer = new MockUp<SuiteOrganizer>() {
+            @Mock
+            public Map<Class, List<Method>> organizeTestMethods(Set<Method> testMethods) {
+                return orderedExecutionMap;
+            }
+        }.getMockInstance();
+
+        AnnotationStrategyHandler annotationStrategyHandler = new MockUp<AnnotationStrategyHandler>() {
+            @Mock
+            Object handleOncePerTestClassAnnotations(Class<?> declaringClass) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+                return declaringClass.newInstance();
+            }
+
+            @Mock
+            void handleOncePerTestAnnotations(Class<?> declaringClass, Object declaredClassInstance) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+
+            }
+        }.getMockInstance();
+        Deencapsulation.setField(this.akiTesting, "suiteOrganizer", suiteOrganizer);
+        Deencapsulation.setField(this.akiTesting, "annotationStrategyHandler", annotationStrategyHandler);
     }
 
     @Test

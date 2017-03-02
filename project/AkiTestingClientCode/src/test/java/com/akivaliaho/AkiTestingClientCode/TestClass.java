@@ -1,12 +1,15 @@
 package com.akivaliaho.AkiTestingClientCode;
 
 import AkiTest.assertz.Assertion;
+import com.akivaliaho.AkiTest.AkiMock;
 import com.akivaliaho.AkiTest.Before;
 import com.akivaliaho.AkiTest.Test;
 import org.slf4j.LoggerFactory;
 
 public class TestClass {
     private org.slf4j.Logger LOG = LoggerFactory.getLogger(TestClass.class);
+    @AkiMock
+    BeerService beerService;
 
     @Before
     public void init() {
