@@ -1,9 +1,9 @@
 package com.akivaliaho.AkiTestingClientCode;
 
 import AkiTest.assertz.Assertion;
-import com.akivaliaho.AkiTest.AkiMock;
-import com.akivaliaho.AkiTest.Before;
-import com.akivaliaho.AkiTest.Test;
+import annotations.AkiMock;
+import annotations.Before;
+import annotations.Test;
 import org.slf4j.LoggerFactory;
 
 public class TestClass {

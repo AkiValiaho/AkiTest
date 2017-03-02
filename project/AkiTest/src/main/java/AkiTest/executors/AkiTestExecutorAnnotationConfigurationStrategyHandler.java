@@ -1,9 +1,9 @@
 package AkiTest.executors;
 
 import AkiTest.mockHook.MockLibraryHook;
-import com.akivaliaho.AkiTest.AkiMock;
-import com.akivaliaho.AkiTest.Before;
-import com.akivaliaho.AkiTest.BeforeClass;
+import annotations.AkiMock;
+import annotations.Before;
+import annotations.BeforeClass;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

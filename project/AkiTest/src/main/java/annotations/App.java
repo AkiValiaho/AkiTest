@@ -1,4 +1,4 @@
-package com.akivaliaho.AkiTest;
+package annotations;
 
 /**
  * Hello world!

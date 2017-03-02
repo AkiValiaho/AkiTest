@@ -1,7 +1,7 @@
 package AkiTest.executors;
 
 import AkiTest.mockHook.MockLibraryHook;
-import com.akivaliaho.AkiTest.Test;
+import annotations.Test;
 import lombok.Getter;
 import lombok.Setter;
 import org.reflections.Configuration;

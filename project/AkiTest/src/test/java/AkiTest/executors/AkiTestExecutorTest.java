@@ -45,13 +45,13 @@ public class AkiTestExecutorTest {
         List<Method> secondTestFileWithTestMethodsLists = new ArrayList<>();
         Method[] declaredMethods = SecondTestFile.class.getDeclaredMethods();
         secondTestFileWithTestMethodsLists.addAll(Arrays.stream(declaredMethods)
-                .filter(method -> method.getAnnotation(com.akivaliaho.AkiTest.Test.class) != null)
+                .filter(method -> method.getAnnotation(annotations.Test.class) != null)
                 .collect(Collectors.toList()));
         //Test file with real tests
         List<Method> testFileWithRealTestsList = new ArrayList<>();
         Method[] testFileWithRealTestsMethods = RealisticTesting.class.getDeclaredMethods();
         testFileWithRealTestsList.addAll(Arrays.stream(testFileWithRealTestsMethods)
-                .filter(method -> method.getAnnotation(com.akivaliaho.AkiTest.Test.class) != null)
+                .filter(method -> method.getAnnotation(annotations.Test.class) != null)
                 .collect(Collectors.toList()));
 
         //Add picked-up methods to executionmap

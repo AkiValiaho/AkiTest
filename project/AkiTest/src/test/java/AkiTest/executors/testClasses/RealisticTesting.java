@@ -1,10 +1,10 @@
 package AkiTest.executors.testClasses;
 
 import AkiTest.assertz.Assertion;
-import com.akivaliaho.AkiTest.AkiMock;
-import com.akivaliaho.AkiTest.Before;
-import com.akivaliaho.AkiTest.BeforeClass;
-import com.akivaliaho.AkiTest.Test;
+import annotations.AkiMock;
+import annotations.Before;
+import annotations.BeforeClass;
+import annotations.Test;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
