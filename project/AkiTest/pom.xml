@@ -20,7 +20,12 @@
     </properties>
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+        <!-- https://mvnrepository.com/artifact/cglib/cglib -->
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>3.2.4</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.jmockit/jmockit -->
         <dependency>
             <groupId>org.jmockit</groupId>

@@ -25,25 +25,32 @@ public class AkiMocker implements MockLibraryHook {
         annotatedFields.stream()
                 .forEach(field -> {
                     try {
+                        //Mocks the field given instantiatedClass
+                        //in a Java 8 stream-loop
                         mock(field, instantiatedClass);
-                    } catch (NoSuchFieldException | IllegalAccessException e) {
+                    } catch (NoSuchFieldException | IllegalAccessException | InstantiationException e) {
                         e.printStackTrace();
                     }
                 });
     }
 
-    private void mock(Field field, Object instantiatedClass) throws NoSuchFieldException, IllegalAccessException {
-        //TODO Test
+    private void mock(Field field, Object instantiatedClass) throws NoSuchFieldException, IllegalAccessException, InstantiationException {
         if (!hasNoArgsConstructor(field.getType().getConstructors())) {
             Class<?> dependencyClassType = field.getType();
             Objenesis o = new ObjenesisStd();
-            Object o1 = o.newInstance(dependencyClassType);
-            //Set field
-            Field field1 = instantiatedClass.getClass().getDeclaredField(field.getName());
-            field1.setAccessible(true);
-            field1.set(instantiatedClass, o1);
+            Object nonNoArgsConstructorInvocation = o.newInstance(dependencyClassType);
+            setField(field, instantiatedClass, nonNoArgsConstructorInvocation);
+        } else {
+            Object noArgsConstructorInvocation = field.getType().newInstance();
+            setField(field, instantiatedClass, noArgsConstructorInvocation);
         }
-        //TODO Add NoArgsConstructor version
+    }
+
+    private void setField(Field field, Object instantiatedClass, Object o1) throws NoSuchFieldException, IllegalAccessException {
+        //Set field
+        Field field1 = instantiatedClass.getClass().getDeclaredField(field.getName());
+        field1.setAccessible(true);
+        field1.set(instantiatedClass, o1);
     }
 
     private boolean hasNoArgsConstructor(Constructor<?>[] constructors) {

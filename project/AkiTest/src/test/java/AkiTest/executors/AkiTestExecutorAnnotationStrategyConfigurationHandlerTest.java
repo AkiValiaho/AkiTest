@@ -31,7 +31,7 @@ public class AkiTestExecutorAnnotationStrategyConfigurationHandlerTest {
         MockLibraryHook mockLibraryHook1 = new MockUp<MockLibraryHook>() {
             @Mock
             public void mock(List<Field> annotatedFields, Object instantiatedClass) {
-                ((RealisticTesting) instantiatedClass).setBeerService(new BeerService());
+                ((RealisticTesting) instantiatedClass).setBeerService(new BeerService("hello world"));
             }
         }.getMockInstance();
         this.akiTestExecutorAnnotationConfigurationStrategyHandler = new AkiTestExecutorAnnotationConfigurationStrategyHandler(mockLibraryHook1);

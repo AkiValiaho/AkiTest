@@ -1,9 +1,10 @@
-package com.akivaliaho.AkiTestingClientCode;
-
 import AkiTest.assertz.Assertion;
+import AkiTest.mockHook.AkiMockInstance;
 import annotations.AkiMock;
+import annotations.AkiMockUp;
 import annotations.Before;
 import annotations.Test;
+import com.akivaliaho.AkiTestingClientCode.BeerService;
 import org.slf4j.LoggerFactory;
 
 public class TestClass {
@@ -17,6 +18,12 @@ public class TestClass {
     }
     @Test(expected = AssertionError.class)
     public void initializationTest() {
+        BeerService mockInstance = new AkiMockInstance<BeerService>() {
+            @AkiMockUp
+            public String getNoArgsString() {
+                return "Hello world";
+            }
+        }.getMockInstance();
         LOG.info("Found the test method!");
         Assertion.assertTrue(beerService != null);
         Assertion.assertTrue(false);
