@@ -21,13 +21,14 @@ public class TestClass {
     @Test(expected = AssertionError.class)
     public void initializationTest() {
         BeerService mockInstance = new AkiMockInstance<BeerService>() {
-            @AkiMockUp
+            @AkiMockUp(hit = 1)
             public String getNoArgsString() {
                 return "Hello world";
             }
         }.getMockInstance();
         String noArgsString = mockInstance.getNoArgsString();
         Assertion.assertTrue(noArgsString.equals("Hello world"));
+        LOG.info("Debug string: {}", noArgsString);
         LOG.info("Found the test method!");
         Assertion.assertTrue(beerService != null);
         Assertion.assertTrue(false);

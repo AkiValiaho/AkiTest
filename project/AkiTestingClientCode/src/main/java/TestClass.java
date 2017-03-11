@@ -25,6 +25,9 @@ public class TestClass {
             }
         }.getMockInstance();
         LOG.info("Found the test method!");
+        String noArgsString = mockInstance.getNoArgsString();
+        LOG.info("Debug string: {}", noArgsString);
+        Assertion.assertTrue(noArgsString.equals("Hello world"));
         Assertion.assertTrue(beerService != null);
         Assertion.assertTrue(false);
     }

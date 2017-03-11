@@ -1,5 +1,7 @@
 package AkiTest.mockHook;
 
+import annotations.AkiMockUp;
+import annotations.MockProperty;
 import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
@@ -9,9 +11,7 @@ import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by vagrant on 3/3/17.
@@ -21,9 +21,12 @@ public class AkiMockInstance<T> {
     private final Type[] actualTypeArguments;
     private final MethodInterceptor methodInterceptor;
     private List<MockMethod> mockMethods = new ArrayList<>();
+    private Map<Method, Integer> invocationMap;
 
     public AkiMockInstance() {
+        //TODO Test with interfaces and abstract classes
         this.akiMockParser = new MockMethodParser();
+        this.invocationMap = new HashMap<>();
         Type enclosingClass = this.getClass().getGenericSuperclass();
         mockMethods = akiMockParser.parseMockMethods(this);
         Class<?> rawType = ((ParameterizedTypeImpl) enclosingClass).getRawType();
@@ -34,12 +37,35 @@ public class AkiMockInstance<T> {
                             .filter(streamMethod -> streamMethod.getMethod().getName().equals(method.getName()))
                             .findFirst();
                     if (first.isPresent()) {
+                        checkInvocationNumberFromStateMap(first.get());
+                        //Check if allowed to invoke first
                         Method method1 = first.get().getMethod();
                         method1.setAccessible(true);
                         return method1.invoke(this, objects);
                     }
                 return null;
             };
+    }
+
+    private void checkInvocationNumberFromStateMap(MockMethod mockMethod) {
+        Method method = mockMethod.getMethod();
+        AkiMockUp annotation = method.getAnnotation(AkiMockUp.class);
+        int hit = annotation.hit();
+        if (invocationMap.containsKey(method)) {
+            Integer numberOfTimesInvoked = invocationMap.get(method);
+            numberOfTimesInvoked++;
+            //Verify allowed to invoke additional times
+            if (numberOfTimesInvoked > hit) {
+                throw new AssertionError("Method " + method.getName() + " invoked " + numberOfTimesInvoked + " times. Should have " +
+                        "been invoked " + hit + " times");
+            }
+            invocationMap.put(method, numberOfTimesInvoked);
+        } else {
+            //Should the method even be in the invocation map?
+            if (!(hit == MockProperty.ANYTIME)) {
+                invocationMap.put(method, 1);
+            }
+        }
     }
 
     public T getMockInstance() {
