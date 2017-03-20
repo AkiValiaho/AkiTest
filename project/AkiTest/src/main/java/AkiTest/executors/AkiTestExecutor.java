@@ -26,6 +26,7 @@ import static AkiTest.preconditions.Preconditions.checkCollectionNotNullOrEmpty;
 public class AkiTestExecutor<T> implements TestExecutor {
  private final SuiteOrganizer suiteOrganizer;
  private final AnnotationStrategyHandler annotationStrategyHandler;
+    private final InvocationAssertionHolder invocationNumberHolder;
     private org.slf4j.Logger LOG = LoggerFactory.getLogger(AkiTestExecutor.class);
     @Getter
     @Setter
@@ -35,6 +36,7 @@ public class AkiTestExecutor<T> implements TestExecutor {
     public AkiTestExecutor(SuiteOrganizer suiteOrganizer, AnnotationStrategyHandler annotationStrategyHandler) {
         this.suiteOrganizer = suiteOrganizer;
         this.annotationStrategyHandler = annotationStrategyHandler;
+        this.invocationNumberHolder = InvocationAssertionHolder.getInstance();
     }
 
     public void execute() {
@@ -62,6 +64,8 @@ public class AkiTestExecutor<T> implements TestExecutor {
                         this.annotationStrategyHandler.handleOncePerTestAnnotations(declaredClassInstance.getClass(),
                                 declaredClassInstance);
                         method.invoke(declaredClassInstance, new Object[0]);
+                        //Assert hits
+                        invocationNumberHolder.assertInvocationHitsMatch(method);
                     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                         if (e instanceof InvocationTargetException) {
                             //Check if exception is allowed to happen
@@ -72,6 +76,7 @@ public class AkiTestExecutor<T> implements TestExecutor {
                                     .getCanonicalName()
                                     .equals(allowedException.getCanonicalName())) {
                                 LOG.debug("Got exception: {} ", e);
+                                invocationNumberHolder.assertInvocationHitsMatch(method);
                             } else {
                                 LOG.debug(e.getMessage());
                                 e.printStackTrace();
