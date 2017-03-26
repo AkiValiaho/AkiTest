@@ -56,8 +56,8 @@ public class InvocationAssertionHolder {
     public void checkMockInvocation(String name, MockMethod mockMethod) {
         AkiMockUp annotation = mockMethod.getMethod().getAnnotation(AkiMockUp.class);
         int hit = annotation.hit();
-        if (invocationholder.containsKey(name)) {
-            Integer numberOfTimesInvoked = invocationholder.get(name);
+        if (invocationholder.containsKey(mockMethod.getMethod())) {
+            Integer numberOfTimesInvoked = invocationholder.get(mockMethod.getMethod());
             numberOfTimesInvoked++;
             //Verify allowed to invoke additional times
             if (numberOfTimesInvoked > hit) {
