@@ -42,17 +42,6 @@ public class InvocationAssertionHolderTest {
         invocationAssertionHolder.assertInvocationHitsMatch(this.getClass().getMethod("tmpAnnotated", null));
     }
 
-    @Test
-    public void putMockMethod() throws Exception {
-    }
-
-    @Test
-    public void checkMockInvocation() throws Exception {
-    }
-
-    @Test
-    public void getInstance() throws Exception {
-    }
     @AkiMockUp(hit = 2)
     public void tmpAnnotated() {
 
