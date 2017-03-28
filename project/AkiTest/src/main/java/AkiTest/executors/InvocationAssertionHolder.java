@@ -36,7 +36,7 @@ public class InvocationAssertionHolder {
                     int hit = method.getMethod().getAnnotation(AkiMockUp.class).hit();
                     if (actualInvocations != hit) {
                         log.debug("Expected annotations differ from actual invocations");
-                        throw new AssertionError("Wrong number of invocations detected, actual: " + actualInvocations + " expected invocations: " + hit);
+                        throw new RuntimeException(new AssertionError("Wrong number of invocations detected, actual: " + actualInvocations + " expected invocations: " + hit));
                     }
                 });
     }

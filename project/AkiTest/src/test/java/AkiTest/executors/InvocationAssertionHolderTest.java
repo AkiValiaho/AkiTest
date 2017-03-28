@@ -2,17 +2,22 @@ package AkiTest.executors;
 
 import AkiTest.mockHook.MockMethod;
 import annotations.AkiMockUp;
+import lombok.extern.slf4j.Slf4j;
 import mockit.Deencapsulation;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by vagrant on 3/26/17.
  */
+@Slf4j
 public class InvocationAssertionHolderTest {
     private InvocationAssertionHolder invocationAssertionHolder;
 
@@ -39,7 +44,9 @@ public class InvocationAssertionHolderTest {
 
     @Test
     public void assertInvocationHitsMatch() throws Exception {
+        PerformanceTestUtil.startTimer();
         invocationAssertionHolder.assertInvocationHitsMatch(this.getClass().getMethod("tmpAnnotated", null));
+        PerformanceTestUtil.stopAndLog();
     }
 
     @AkiMockUp(hit = 2)
