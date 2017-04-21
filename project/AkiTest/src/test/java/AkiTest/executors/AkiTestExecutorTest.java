@@ -15,7 +15,6 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -87,7 +86,6 @@ public class AkiTestExecutorTest {
 
             @Mock
             void handleOncePerTestAnnotations(Class<?> declaringClass, Object declaredClassInstance) throws IllegalAccessException, InvocationTargetException, InstantiationException {
-
             }
         }.getMockInstance();
         Deencapsulation.setField(this.akiTesting, "suiteOrganizer", suiteOrganizer);
