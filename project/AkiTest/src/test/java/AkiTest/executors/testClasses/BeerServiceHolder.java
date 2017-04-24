@@ -2,16 +2,18 @@ package AkiTest.executors.testClasses;
 
 import annotations.AkiMock;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * Created by vagrant on 3/3/17.
  */
+@NoArgsConstructor
 public class BeerServiceHolder {
 @Getter
 @Setter
 @AkiMock
-private final BeerService beerService;
+private BeerService beerService;
 
 @Getter
 @Setter
