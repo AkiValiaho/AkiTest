@@ -1,17 +1,16 @@
 package AkiTest.executors;
 
-import AkiTest.executors.testClasses.SecondTestFile;
 import AkiTest.executors.testClasses.RealisticTesting;
+import AkiTest.executors.testClasses.SecondTestFile;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
+import static java.util.Arrays.stream;
 
 /**
  * Created by vagrant on 3/1/17.
@@ -40,9 +39,8 @@ public class SuiteOrganizerTest {
             Assert.assertTrue(secondTestFileMethods.contains(methods[i]));
         }
         List<Method> testFileWithRealTestsMethods = classListMap.get(RealisticTesting.class);
-        for (int i = 0; i < methods1.length; i++) {
-            Assert.assertTrue(testFileWithRealTestsMethods.contains(methods1[i]));
-        }
+        Arrays.stream(methods1)
+                .forEach(m -> Assert.assertTrue(testFileWithRealTestsMethods.contains(m)));
     }
 
     public Set<Method> concatenateToSet(Method[] firstArray, Method[] secondArray) {
@@ -54,9 +52,8 @@ public class SuiteOrganizerTest {
 
     private Set<Method> setFromArray(Method[] concatenatedArray) {
         Set<Method> methods = new HashSet<>();
-        for (int i = 0; i < concatenatedArray.length; i++) {
-            methods.add(concatenatedArray[i]);
-        }
+        stream(concatenatedArray)
+                .forEach(ca -> methods.add(ca));
         return methods;
     }
 }

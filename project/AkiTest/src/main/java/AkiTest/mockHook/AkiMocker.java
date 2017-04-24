@@ -10,6 +10,9 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 
 /**
  * Created by vagrant on 3/2/17.
@@ -37,11 +40,28 @@ public class AkiMocker implements MockLibraryHook {
     }
 
     private void mock(Field field, Object instantiatedClass) throws NoSuchFieldException, IllegalAccessException, InstantiationException {
-        if (!hasNoArgsConstructor(field.getType().getConstructors())) {
-            Class<?> dependencyClassType = field.getType();
-            Objenesis o = new ObjenesisStd();
-            Object nonNoArgsConstructorInvocation = o.newInstance(dependencyClassType);
-            setField(field, instantiatedClass, nonNoArgsConstructorInvocation);
+        Function<Constructor<?>[], Boolean> hasNoArgsConstructor = constructors -> {
+            Optional<Constructor<?>> first = Arrays.stream(constructors)
+                    .parallel()
+                    .filter(c -> c.getParameterCount() == 0)
+                    .findFirst();
+            if (first.isPresent()) {
+                return true;
+            }
+            return false;
+        };
+        if (!hasNoArgsConstructor.apply(field.getType().getConstructors())) {
+            Consumer<Field> setField = interField -> {
+                Class<?> dependencyClassType = interField.getType();
+                Objenesis o = new ObjenesisStd();
+                Object nonNoArgsConstructorInvocation = o.newInstance(dependencyClassType);
+                try {
+                    setField(interField, instantiatedClass, nonNoArgsConstructorInvocation);
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            };
+            setField.accept(field);
         } else {
             Object noArgsConstructorInvocation = field.getType().newInstance();
             setField(field, instantiatedClass, noArgsConstructorInvocation);
@@ -53,20 +73,5 @@ public class AkiMocker implements MockLibraryHook {
         Field field1 = instantiatedClass.getClass().getDeclaredField(field.getName());
         field1.setAccessible(true);
         field1.set(instantiatedClass, o1);
-    }
-
-    private boolean hasNoArgsConstructor(Constructor<?>[] constructors) {
-        Optional<Constructor<?>> first = Arrays.stream(constructors)
-                .parallel()
-                .filter(c -> c.getParameterCount() == 0)
-                .findFirst();
-        if (first.isPresent()) {
-            return true;
-        }
-        return false;
-    }
-
-    private Boolean checkParameterCount(Constructor<?> c) {
-        return c.getParameterCount() == 0;
     }
 }

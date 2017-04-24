@@ -28,7 +28,7 @@ public class InvocationAssertionHolderTest {
         //Create one mocked annotation
         List<MockMethod> mockedMethod = createMockedMethod();
         mockMethodsByTestMethod.put("tmpAnnotated", mockedMethod);
-        Deencapsulation.setField(this.invocationAssertionHolder, "mockMethodsByTestMethod",mockMethodsByTestMethod);
+        Deencapsulation.setField(this.invocationAssertionHolder, "mockMethodsByTestMethod", mockMethodsByTestMethod);
         Map<Method, Integer> invocationHolder = new HashMap<>();
         invocationHolder.put(mockedMethod.get(0).getMethod(), 2);
         Deencapsulation.setField(this.invocationAssertionHolder, "invocationholder", invocationHolder);

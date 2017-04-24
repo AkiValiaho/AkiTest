@@ -36,19 +36,19 @@ public class AkiMockInstance<T> {
         Class<?> rawType = ((ParameterizedTypeImpl) enclosingClass).getRawType();
         this.actualTypeArguments = ((ParameterizedTypeImpl) enclosingClass).getActualTypeArguments();
         this.methodInterceptor = (o, method, objects, methodProxy) -> {
-                    //Invoke method
-                    Optional<MockMethod> first = mockMethods.stream()
-                            .filter(streamMethod -> streamMethod.getMethod().getName().equals(method.getName()))
-                            .findFirst();
-                    if (first.isPresent()) {
-                        checkInvocationNumberFromStateMap(first.get());
-                        //Check if allowed to invoke first
-                        Method method1 = first.get().getMethod();
-                        method1.setAccessible(true);
-                        return method1.invoke(this, objects);
-                    }
-                return null;
-            };
+            //Invoke method
+            Optional<MockMethod> first = mockMethods.stream()
+                    .filter(streamMethod -> streamMethod.getMethod().getName().equals(method.getName()))
+                    .findFirst();
+            if (first.isPresent()) {
+                checkInvocationNumberFromStateMap(first.get());
+                //Check if allowed to invoke first
+                Method method1 = first.get().getMethod();
+                method1.setAccessible(true);
+                return method1.invoke(this, objects);
+            }
+            return null;
+        };
     }
 
     private void checkInvocationNumberFromStateMap(MockMethod mockMethod) {
@@ -68,7 +68,7 @@ public class AkiMockInstance<T> {
             enhancer.setSuperclass(aClass);
             enhancer.setCallbackType(methodInterceptor.getClass());
             Class<T> aClass1 = enhancer.createClass();
-            Enhancer.registerCallbacks(aClass1, new Callback[] {methodInterceptor});
+            Enhancer.registerCallbacks(aClass1, new Callback[]{methodInterceptor});
             //Use objenesis to bypass constructor instance creation
             return objenesis.newInstance(aClass1);
         } catch (ClassNotFoundException e) {

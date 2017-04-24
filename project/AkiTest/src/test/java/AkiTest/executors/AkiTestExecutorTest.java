@@ -15,6 +15,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -48,13 +49,13 @@ public class AkiTestExecutorTest {
                 .collect(Collectors.toList()));
         //Test file with real tests
         List<Method> testFileWithRealTestsList = new ArrayList<>();
-        Method[] testFileWithRealTestsMethods = RealisticTesting.class.getDeclaredMethods();
-        testFileWithRealTestsList.addAll(Arrays.stream(testFileWithRealTestsMethods)
+        Method[] testFileWithRealTestMethods = RealisticTesting.class.getDeclaredMethods();
+        testFileWithRealTestsList.addAll(Arrays.stream(testFileWithRealTestMethods)
                 .filter(method -> method.getAnnotation(annotations.Test.class) != null)
                 .collect(Collectors.toList()));
 
         //Add picked-up methods to executionmap
-        orderedExecutionMap.put(testFileWithRealTestsMethods[0].getDeclaringClass(), testFileWithRealTestsList);
+        orderedExecutionMap.put(testFileWithRealTestMethods[0].getDeclaringClass(), testFileWithRealTestsList);
         orderedExecutionMap.put(declaredMethods[0].getDeclaringClass(), secondTestFileWithTestMethodsLists);
         return orderedExecutionMap;
     }

@@ -18,10 +18,17 @@ import java.util.Map;
 public class InvocationAssertionHolder {
     private Map<Method, Integer> invocationholder;
     private Map<String, List<MockMethod>> mockMethodsByTestMethod;
+
     private InvocationAssertionHolder() {
         this.invocationholder = new HashMap<>();
         this.mockMethodsByTestMethod = new HashMap<>();
     }
+
+    public static InvocationAssertionHolder getInstance() {
+        //Loads the inner static class lazily
+        return LazyLoadedInvocationHandler.holder;
+    }
+
     public synchronized void assertInvocationHitsMatch(Method testMethod) {
         assert testMethod != null;
         log.debug("Trying to assert invocations post test method: {}", testMethod.getName());
@@ -49,7 +56,7 @@ public class InvocationAssertionHolder {
         } else {
             List<MockMethod> mockMethods = new ArrayList<>();
             mockMethods.add(mockMethod);
-            mockMethodsByTestMethod.put(testMethodName,mockMethods);
+            mockMethodsByTestMethod.put(testMethodName, mockMethods);
         }
     }
 
@@ -76,9 +83,5 @@ public class InvocationAssertionHolder {
 
     private static class LazyLoadedInvocationHandler {
         private static final InvocationAssertionHolder holder = new InvocationAssertionHolder();
-    }
-    public static InvocationAssertionHolder getInstance() {
-        //Loads the inner static class lazily
-        return LazyLoadedInvocationHandler.holder;
     }
 }
