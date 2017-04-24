@@ -70,6 +70,14 @@ public class AkiTestExecutorTest {
         assertTrue(this.testLogAppender.containsString("Something wild happened"));
     }
 
+    @Test
+    public void executeInParallel() throws Exception {
+        mockDependenciesExecute();
+        defaultClassPathScan();
+        this.akiTesting.executeInParallel();
+        assertTrue(this.testLogAppender.containsString("Something wild happened"));
+    }
+
     private void mockDependenciesExecute() {
         Map<Class, List<Method>> orderedExecutionMap = createDefaultOrderedTestExecutionMap();
         SuiteOrganizer suiteOrganizer = new MockUp<SuiteOrganizer>() {

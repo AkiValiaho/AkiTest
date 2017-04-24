@@ -41,9 +41,7 @@ public class AkiTestExecutor<T> implements TestExecutor {
 
     public void execute() {
         //Number of tests to execute logged here
-        LOG.info("Executing {} tests", testMethods.size());
-        checkCollectionNotNullOrEmpty(testMethods);
-        Map<Class, List<Method>> testMethodsPerClass = suiteOrganizer.organizeTestMethods(testMethods);
+        Map<Class, List<Method>> testMethodsPerClass = organizeByClass();
         testMethodsPerClass.values()
                 .forEach(methodList -> {
                     try {
@@ -54,9 +52,29 @@ public class AkiTestExecutor<T> implements TestExecutor {
                 });
     }
 
+    public void executeInParallel() {
+        Map<Class, List<Method>> testMethodsPerClass = organizeByClass();
+        //Spawn a runner per test method class
+        testMethodsPerClass.values()
+                .parallelStream()
+                .forEach(methodList -> {
+                    try {
+                        executeTestsInList(methodList, true);
+                    } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+                });
+    }
+
+    private Map<Class, List<Method>> organizeByClass() {
+        //Number of tests to execute logged here
+        LOG.info("Executing {} tests", testMethods.size());
+        checkCollectionNotNullOrEmpty(testMethods);
+        return suiteOrganizer.organizeTestMethods(testMethods);
+    }
+
     private void executeTestsInList(List<Method> methodList) throws IllegalAccessException, InstantiationException, InvocationTargetException {
         Object declaredClassInstance = this.annotationStrategyHandler.handleOncePerTestClassAnnotations(methodList.get(0).getDeclaringClass());
-        //TODO Provide flag to allow parallelization
         methodList.stream()
                 .forEach(method -> {
                     runTest(declaredClassInstance, method);
