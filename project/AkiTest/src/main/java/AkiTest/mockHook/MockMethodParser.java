@@ -13,7 +13,6 @@ public class MockMethodParser {
 
     public <T> List<MockMethod> parseMockMethods(AkiMockInstance<T> tAkiMockInstance) {
         Method[] declaredMethods = tAkiMockInstance.getClass().getDeclaredMethods();
-        //TODO Check every method has @Mock annotation
         return Arrays.stream(declaredMethods)
                 .map(method -> {
                     Annotation[] annotations = method.getAnnotations();

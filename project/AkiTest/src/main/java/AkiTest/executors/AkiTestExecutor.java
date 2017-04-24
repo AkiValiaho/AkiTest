@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
 import static AkiTest.preconditions.Preconditions.checkCollectionNotNullOrEmpty;
 
 public class AkiTestExecutor<T> implements TestExecutor {
- private final SuiteOrganizer suiteOrganizer;
- private final AnnotationStrategyHandler annotationStrategyHandler;
+    private final SuiteOrganizer suiteOrganizer;
+    private final AnnotationStrategyHandler annotationStrategyHandler;
     private final InvocationAssertionHolder invocationNumberHolder;
     private org.slf4j.Logger LOG = LoggerFactory.getLogger(AkiTestExecutor.class);
     @Getter
@@ -59,34 +59,46 @@ public class AkiTestExecutor<T> implements TestExecutor {
         //TODO Provide flag to allow parallelization
         methodList.stream()
                 .forEach(method -> {
-                    try {
-                        //Invoker in try/catch-block to catch AssertExceptions
-                        this.annotationStrategyHandler.handleOncePerTestAnnotations(declaredClassInstance.getClass(),
-                                declaredClassInstance);
-                        method.invoke(declaredClassInstance, new Object[0]);
-                        //Assert hits
-                        invocationNumberHolder.assertInvocationHitsMatch(method);
-                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                        if (e instanceof InvocationTargetException) {
-                            //Check if exception is allowed to happen
-                            Class<? extends Throwable> allowedException = getAllowedException(method);
-                            if (((InvocationTargetException) e)
-                                    .getTargetException()
-                                    .getClass()
-                                    .getCanonicalName()
-                                    .equals(allowedException.getCanonicalName())) {
-                                LOG.debug("Got exception: {} ", e);
-                                invocationNumberHolder.assertInvocationHitsMatch(method);
-                            } else {
-                                LOG.debug(e.getMessage());
-                                e.printStackTrace();
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    } catch (InstantiationException e) {
-                        e.printStackTrace();
-                    }
+                    runTest(declaredClassInstance, method);
                 });
+    }
+
+    private void executeTestsInList(List<Method> methodList, Boolean parallel) throws IllegalAccessException, InstantiationException, InvocationTargetException {
+        //TODO USe somewhere
+        Object declaredClassInstance = this.annotationStrategyHandler.handleOncePerTestClassAnnotations(methodList.get(0).getDeclaringClass());
+        methodList
+                .parallelStream()
+                .forEach(method -> runTest(declaredClassInstance, method));
+    }
+
+    private void runTest(Object declaredClassInstance, Method method) {
+        try {
+            //Invoker in try/catch-block to catch AssertExceptions
+            this.annotationStrategyHandler.handleOncePerTestAnnotations(declaredClassInstance.getClass(),
+                    declaredClassInstance);
+            method.invoke(declaredClassInstance, new Object[0]);
+            //Assert hits
+            invocationNumberHolder.assertInvocationHitsMatch(method);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            if (e instanceof InvocationTargetException) {
+                //Check if exception is allowed to happen
+                Class<? extends Throwable> allowedException = getAllowedException(method);
+                if (((InvocationTargetException) e)
+                        .getTargetException()
+                        .getClass()
+                        .getCanonicalName()
+                        .equals(allowedException.getCanonicalName())) {
+                    LOG.debug("Got exception: {} ", e);
+                    invocationNumberHolder.assertInvocationHitsMatch(method);
+                } else {
+                    LOG.debug(e.getMessage());
+                    e.printStackTrace();
+                    throw new RuntimeException(e);
+                }
+            }
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        }
     }
 
 
