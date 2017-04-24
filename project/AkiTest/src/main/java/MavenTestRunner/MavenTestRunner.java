@@ -1,9 +1,6 @@
 package MavenTestRunner;
 
-import AkiTest.executors.AkiTestExecutorAnnotationConfigurationStrategyHandler;
-import AkiTest.executors.NormalTestExecutor;
-import AkiTest.executors.SuiteOrganizer;
-import AkiTest.executors.TestExecutor;
+import AkiTest.executors.*;
 import AkiTest.mockHook.AkiMocker;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
@@ -30,6 +27,8 @@ public class MavenTestRunner extends AbstractMojo {
     private MavenProject project;
     @Parameter
     private String[] defaultPackage;
+    @Parameter
+    private String[] parallel;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
@@ -37,8 +36,15 @@ public class MavenTestRunner extends AbstractMojo {
             //with custom classloader
             Thread.currentThread().setContextClassLoader(getClassLoader());
             getLog().info("Executing Aki Tests");
-            TestExecutor akiTestExecutor = new NormalTestExecutor(new SuiteOrganizer(),
-                    new AkiTestExecutorAnnotationConfigurationStrategyHandler(new AkiMocker()));
+            TestExecutor akiTestExecutor;
+            if (parallel.length > 0 && parallel[0].equals("true")) {
+                //Use the parallel test executor
+                akiTestExecutor = new ParallelTestExecutor(new AkiTestExecutorAnnotationConfigurationStrategyHandler(new AkiMocker()),
+                        new SuiteOrganizer());
+            } else {
+                akiTestExecutor = new NormalTestExecutor(new SuiteOrganizer(),
+                        new AkiTestExecutorAnnotationConfigurationStrategyHandler(new AkiMocker()));
+            }
             akiTestExecutor.scanClassPathForTests(Arrays.stream(defaultPackage).collect(Collectors.toList()));
             akiTestExecutor.execute();
         } catch (DependencyResolutionRequiredException e) {
