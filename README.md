@@ -75,3 +75,9 @@ You need the plugin in your pom:
             Assertion.assertTrue(false);
         }
     }
+    
+    
+# Worklist
+    
+    
+    Assertion additions: jsonPath-type of assertion
