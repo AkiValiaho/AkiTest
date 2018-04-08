@@ -1,7 +1,7 @@
 # AkiTest
 [![Build Status](https://travis-ci.org/AkiValiahoa/AkiTest.svg)](https://travis-ci.org/AkiValiaho/AkiTest)
 
-Humorously named educational unit test framework
+Humorously named educational unit test and mocking library
 
 Implemented as a Maven MOJO-plugin which is injected into the test phase of
 your build.
