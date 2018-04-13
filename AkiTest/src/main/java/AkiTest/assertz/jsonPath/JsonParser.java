@@ -44,12 +44,14 @@ public class JsonParser {
         }
 
         private void processCharacter(char c) {
+            //TODO Refactor to context engine after some time
             if (c == ':') {
-                //key found
+                //key found, set it as the currentKey
                 this.currentKey = new JsonKey(currentKeyBuilder.toString());
                 currentKeyBuilder = new StringBuilder();
                 return;
             }
+            //skip on whitespace TODO
             currentKeyBuilder.append(c);
         }
 
