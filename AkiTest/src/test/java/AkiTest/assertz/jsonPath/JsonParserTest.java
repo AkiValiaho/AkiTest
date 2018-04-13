@@ -27,11 +27,13 @@ public class JsonParserTest {
         this.jsonParser = new JsonParser("\"aki\": \"hello\"}");
         this.jsonParser.findMatchingValue("aki");
     }
+
     @Test(expected = IllegalArgumentException.class)
     public void findMatchingValue_missingClosingBracket_shouldThrowExecption() {
         this.jsonParser = new JsonParser("{\"aki\": \"hello\"");
         this.jsonParser.findMatchingValue("aki");
     }
+
     @Test
     public void findMatchingValue_validMultiJson_shouldReturnCorrectValue() {
         this.jsonParser = new JsonParser("{\"aki\": \"hello\", \"asdf\": \"asdf\"}");

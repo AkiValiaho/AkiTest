@@ -1,6 +1,9 @@
 package AkiTest.assertz.jsonPath;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.google.common.base.Preconditions.checkArgument;
 
 public class JsonParser {
@@ -24,12 +27,30 @@ public class JsonParser {
         private Character startingChar = null;
         private Character endingChar = null;
 
+        private Map<JsonKey, JsonValue> hashMap = new HashMap<>();
+
+        private StringBuilder currentKeyBuilder = new StringBuilder();
+        private JsonKey currentKey;
+
         void feedCharacter(char c) {
             if (startingChar == null) {
                 //Check starting character is a bracket
                 checkArgument(c == '{', "Missing left bracket '{', not valid JSON");
+                startingChar = c;
+                return;
             }
+            //Starting char already set
+            processCharacter(c);
+        }
 
+        private void processCharacter(char c) {
+            if (c == ':') {
+                //key found
+                this.currentKey = new JsonKey(currentKeyBuilder.toString());
+                currentKeyBuilder = new StringBuilder();
+                return;
+            }
+            currentKeyBuilder.append(c);
         }
 
         String getMatchingComponent(String matcher) {
