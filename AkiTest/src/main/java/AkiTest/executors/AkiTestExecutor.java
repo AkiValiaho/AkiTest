@@ -33,7 +33,7 @@ public class AkiTestExecutor<T> implements TestExecutor {
     private Set<Method> testMethods = new HashSet<>();
     private MockLibraryHook mockLibrary;
 
-    public AkiTestExecutor(SuiteOrganizer suiteOrganizer, AnnotationStrategyHandler annotationStrategyHandler) {
+    AkiTestExecutor(SuiteOrganizer suiteOrganizer, AnnotationStrategyHandler annotationStrategyHandler) {
         this.suiteOrganizer = suiteOrganizer;
         this.annotationStrategyHandler = annotationStrategyHandler;
         this.invocationNumberHolder = InvocationAssertionHolder.getInstance();
