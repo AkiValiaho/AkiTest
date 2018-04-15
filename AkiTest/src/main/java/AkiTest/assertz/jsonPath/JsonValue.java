@@ -6,4 +6,8 @@ class JsonValue {
     JsonValue(String jsonValue) {
         this.value = jsonValue;
     }
+
+    String getValue() {
+        return value;
+    }
 }

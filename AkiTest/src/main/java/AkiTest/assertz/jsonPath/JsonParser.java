@@ -19,7 +19,7 @@ public class JsonParser {
         for (int i = 0; i < json.length(); i++) {
             jsonCharFeed.feedCharacter(json.charAt(i));
         }
-        return jsonCharFeed.getMatchingComponent(matcher);
+        return jsonCharFeed.getMatchingComponent(matcher).getValue();
     }
 
     private class JsonCharFeed {
@@ -27,7 +27,7 @@ public class JsonParser {
         private Character startingChar = null;
         private Character endingChar = null;
 
-        private Map<JsonKey, JsonValue> hashMap = new HashMap<>();
+        private Map<JsonKey, JsonValue> keyValueMap = new HashMap<>();
 
         private StringBuilder currentKeyBuilder = new StringBuilder();
         private StringBuilder currentValueBuilder = new StringBuilder();
@@ -67,6 +67,9 @@ public class JsonParser {
             if (checkIfAppendToValue(c)) {
                 return;
             }
+            if (c == '}') {
+                endingChar = '}';
+            }
             currentKeyBuilder.append(c);
         }
 
@@ -83,20 +86,23 @@ public class JsonParser {
             if (c == '"') {
                 if (currentValueBuilder.length() != 0) {
                     this.currentValue = new JsonValue(currentValueBuilder.toString());
-                    this.hashMap.put(currentKey, currentValue);
+                    this.keyValueMap.put(currentKey, currentValue);
                     currentKey = null;
                     currentValue = null;
                     valueBuilt = true;
                 }
                 return true;
             }
-            //TODO if value set next char should be , or {
             return false;
         }
 
-        String getMatchingComponent(String matcher) {
+        JsonValue getMatchingComponent(String matcher) {
             checkArgument(endingChar != null, "Missing closing right bracket '}', not valid JSON");
-            return "";
+            JsonKey key = new JsonKey(matcher);
+            if (keyValueMap.containsKey(key)) {
+                return keyValueMap.get(key);
+            }
+            return null;
         }
     }
 }
