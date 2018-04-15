@@ -32,9 +32,6 @@ public class JsonParser {
         private StringBuilder currentKeyBuilder = new StringBuilder();
         private StringBuilder currentValueBuilder = new StringBuilder();
         private JsonKey currentKey;
-        private boolean keyFollowingWhiteSpace;
-        private boolean keySet;
-        private boolean valueBuilt;
         private JsonValue currentValue;
 
         void feedCharacter(char c) {
@@ -54,17 +51,16 @@ public class JsonParser {
                 //key found, set it as the currentKey
                 this.currentKey = new JsonKey(currentKeyBuilder.toString());
                 currentKeyBuilder = new StringBuilder();
-                this.keyFollowingWhiteSpace = true;
                 return;
             }
             if (checkSkips(c)) return;
-            if (c == ' ' && keyFollowingWhiteSpace) {
-                keySet = true;
+            if (c == ' ') {
                 return;
             }
 
-            keyFollowingWhiteSpace = false;
-            if (checkIfAppendToValue(c)) {
+
+            if (appendToValue(c)) {
+                currentValueBuilder.append(c);
                 return;
             }
             if (c == '}') {
@@ -73,9 +69,8 @@ public class JsonParser {
             currentKeyBuilder.append(c);
         }
 
-        private boolean checkIfAppendToValue(char c) {
-            if (keySet && !valueBuilt) {
-                currentValueBuilder.append(c);
+        private boolean appendToValue(char c) {
+            if (currentKey != null) {
                 return true;
             }
             return false;
@@ -89,8 +84,11 @@ public class JsonParser {
                     this.keyValueMap.put(currentKey, currentValue);
                     currentKey = null;
                     currentValue = null;
-                    valueBuilt = true;
+                    currentValueBuilder = new StringBuilder();
                 }
+                return true;
+            }
+            if (c == ',') {
                 return true;
             }
             return false;
