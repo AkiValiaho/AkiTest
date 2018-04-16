@@ -41,5 +41,10 @@ public class JsonParserTest {
         assertEquals(asdf, "asdf");
     }
 
+    @Test
+    public void findMatchingValue_validMultiJsonWithArray_shouldReturnCorrectValueInsideArray() {
+        //TODO
+    }
+
 
 }
