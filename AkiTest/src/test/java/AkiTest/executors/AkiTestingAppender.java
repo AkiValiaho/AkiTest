@@ -37,6 +37,6 @@ public class AkiTestingAppender extends ConsoleAppender {
                     return false;
                 })
                 .collect(Collectors.toSet());
-        return collect.size() > 0 ? true : false;
+        return collect.size() > 0;
     }
 }
