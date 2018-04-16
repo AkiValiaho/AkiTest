@@ -1,5 +1,5 @@
 # AkiTest
-[![Build Status](https://travis-ci.org/AkiValiahoa/AkiTest.svg)](https://travis-ci.org/AkiValiaho/AkiTest)
+[![Build Status](https://travis-ci.org/AkiValiaho/AkiTest.svg?branch=master)](https://travis-ci.org/AkiValiaho/AkiTest)
 
 Humorously named educational unit test and mocking library
 
@@ -74,10 +74,27 @@ You need the plugin in your pom:
             Assertion.assertTrue(beerService != null);
             Assertion.assertTrue(false);
         }
+        
+        #Example with jsonPath matcher
+           @Test
+            public void jsonPathParserTest() {
+                BeerService mockInstance = new AkiMockInstance<BeerService>() {
+                    @AkiMockUp(hit = 1)
+                    public String getNoArgsString() {
+                        return "{\"aki\": \"hello\", \"testing\" : \"testbed\"}";
+                    }
+                }.getMockInstance();
+                String noArgsString = mockInstance.getNoArgsString();
+                String testing = jsonPath(noArgsString, "testing");
+                LOG.info("JsonPath found string: {}", testing);
+                assertEquals(testing, "testbed");
+            }
     }
+    
+    
+    
     
     
 # Worklist
     
-    
-    Assertion additions: jsonPath-type of assertion
+    jsonPath navigation for jsons with arrays inside them
