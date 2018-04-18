@@ -1,5 +1,5 @@
-# AkiTest
-[![Build Status](https://travis-ci.org/AkiValiaho/AkiTest.svg?branch=master)](https://travis-ci.org/AkiValiaho/AkiTest)
+# TestingLibrary
+[![Build Status](https://travis-ci.org/TestingLibrary/TestingLibrary.svg?branch=master)](https://travis-ci.org/AkiValiaho/TestingLibrary)
 
 Humorously named educational unit test and mocking library
 
@@ -10,7 +10,7 @@ your build.
 
 # How to use
 
-AkiTest is used in a very familiar way if you've done work with testing libraries
+TestingLibrary is used in a very familiar way if you've done work with testing libraries
 like JUnit.
 
 You need the plugin in your pom:
