@@ -1,5 +1,5 @@
 # TestingLibrary
-[![Build Status](https://travis-ci.org/TestingLibrary/TestingLibrary.svg?branch=master)](https://travis-ci.org/AkiValiaho/TestingLibrary)
+[![Build Status][(https://travis-ci.org/AkiValiaho/TestingLibrary.svg?branch=master)](https://travis-ci.org/AkiValiaho/TestingLibrary)
 
 Humorously named educational unit test and mocking library
 
